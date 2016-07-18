@@ -9,7 +9,7 @@ type Self struct {
 	ID string `json:"id"`
 }
 
-type ResponseRtmStart struct {
+type RtmStart struct {
 	Ok    bool   `json:"ok"`
 	Error string `json:"error"`
 	URL   string `json:"url"`
