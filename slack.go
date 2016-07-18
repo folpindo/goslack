@@ -73,8 +73,8 @@ func getRealTimeEvents(s *Slack) {
 
 var counter uint64
 
-// PostMessage sends a message to a Slack channel
-func (s *Slack) PostMessage(channel, text string) error {
+// PostRealTimeMessage sends a message to a Slack channel
+func (s *Slack) PostRealTimeMessage(channel, text string) error {
 	id := atomic.AddUint64(&counter, 1)
 	m := rtmtypes.RtmMessage{
 		RtmEvent: rtmtypes.RtmEvent{Type: "message"},
