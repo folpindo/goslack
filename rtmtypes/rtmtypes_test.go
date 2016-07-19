@@ -12,7 +12,7 @@ func TestUnmarshalEvent(t *testing.T) {
 	event, err := Unmarshal(raw)
 	require.Nil(t, err)
 	assert.Equal(t, "message", event.Type)
-	assert.Equal(t, raw, event.raw)
+	assert.Equal(t, raw, event.Raw)
 }
 
 func TestUnmarshalInvalidEvent(t *testing.T) {

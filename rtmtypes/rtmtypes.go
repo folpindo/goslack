@@ -15,7 +15,7 @@ type RtmEvent struct {
 // RtmRaw is the raw JSON data and type tag that can be coerced
 type RtmRaw struct {
 	RtmEvent
-	raw []byte
+	Raw []byte
 }
 
 // RtmMessage is a Slack message sent to a channel
@@ -43,7 +43,7 @@ func Unmarshal(raw []byte) (event RtmRaw, err error) {
 	if event.Type == "" {
 		err = fmt.Errorf("Missing type in Slack event `%v`", raw)
 	} else {
-		event.raw = raw
+		event.Raw = raw
 	}
 	return
 }
@@ -52,7 +52,7 @@ func (e *RtmRaw) unmarshalToType(t string, v interface{}) (err error) {
 	if e.Type != t {
 		err = fmt.Errorf("Expected type `%s` but received `%s`", t, e.Type)
 	} else {
-		err = json.Unmarshal(e.raw, v)
+		err = json.Unmarshal(e.Raw, v)
 	}
 	return
 }
