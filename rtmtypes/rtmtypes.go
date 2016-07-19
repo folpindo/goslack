@@ -41,7 +41,7 @@ func Unmarshal(raw []byte) (event RtmRaw, err error) {
 	}
 
 	if event.Type == "" {
-		err = fmt.Errorf("Missing type in Slack event `%v`", raw)
+		err = fmt.Errorf("Missing type in Slack event `%s`", string(raw))
 	} else {
 		event.Raw = raw
 	}
