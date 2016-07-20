@@ -5,6 +5,12 @@ type UserInfo struct {
 	Name string `json:"name"`
 }
 
+type ChannelInfo struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	IsMember bool   `json:"is_member"`
+}
+
 type Self struct {
 	ID string `json:"id"`
 }
@@ -20,4 +26,10 @@ type UserList struct {
 	Ok      bool       `json:"ok"`
 	Error   string     `json:"error"`
 	Members []UserInfo `json:"members"`
+}
+
+type ChannelList struct {
+	Ok       bool          `json:"ok"`
+	Error    string        `json:"error"`
+	Channels []ChannelInfo `json:"channels"`
 }

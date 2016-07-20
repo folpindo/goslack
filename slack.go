@@ -110,3 +110,30 @@ func (s *Slack) GetUserList() (users []apitypes.UserInfo, err error) {
 	users = response.Members
 	return
 }
+
+// GetChannelList retrieves a list of active public channels
+func (s *Slack) GetChannelList() (channels []apitypes.ChannelInfo, err error) {
+	body := encodeFormData(map[string]string{
+		"token":            s.Token,
+		"exclude_archived": "1",
+	})
+
+	resp, err := get("https://slack.com/api/channels.list?" + body)
+	if err != nil {
+		return
+	}
+
+	var response apitypes.ChannelList
+	err = json.Unmarshal(resp, &response)
+	if err != nil {
+		return
+	}
+
+	if !response.Ok {
+		err = fmt.Errorf("Error getting channel info: %s", response.Error)
+	}
+
+	channels = response.Channels
+	return
+
+}
