@@ -14,6 +14,7 @@ A Slack client library for Golang, updated with new features as I need them
 
 ## Example
 
+    {% highlight go %}
     connection, err := goslack.New(token)
     if err != nil {
         log.Fatal(err)
@@ -32,3 +33,4 @@ A Slack client library for Golang, updated with new features as I need them
             // do something with userChange
         }
     }
+    {% endhighlight %}
