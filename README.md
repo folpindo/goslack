@@ -26,6 +26,9 @@ for {
     if event.Type == "message" {
         message, err := event.RtmMessage()
         // do something with message
+        connection.PostRealTimeMessage(
+            message.Channel,
+            fmt.Sprintf("<@%s> Hello!", message.User))
     }
 
     if event.Type == "user_change" {
