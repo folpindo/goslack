@@ -14,23 +14,23 @@ A Slack client library for Golang, updated with new features as I need them
 
 ## Example
 
-    {% highlight go %}
-    connection, err := goslack.New(token)
-    if err != nil {
-        log.Fatal(err)
+```go
+connection, err := goslack.New(token)
+if err != nil {
+    log.Fatal(err)
+}
+
+for {
+    event := <-connection.RealTime
+
+    if event.Type == "message" {
+        message, err := event.RtmMessage()
+        // do something with message
     }
 
-    for {
-        event := <-connection.RealTime
-
-        if event.Type == "message" {
-            message, err := event.RtmMessage()
-            // do something with message
-        }
-
-        if event.Type == "user_change" {
-            userChange, err := event.RtmUserChange()
-            // do something with userChange
-        }
+    if event.Type == "user_change" {
+        userChange, err := event.RtmUserChange()
+        // do something with userChange
     }
-    {% endhighlight %}
+}
+```
