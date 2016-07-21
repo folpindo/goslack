@@ -63,7 +63,6 @@ func getRealTimeEvents(s *Slack) {
 
 		e, err := rtmtypes.Unmarshal(data)
 		if err != nil {
-			log.Printf("Error unmarshalling message: %q", err)
 			continue
 		}
 
