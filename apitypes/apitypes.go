@@ -33,3 +33,9 @@ type ChannelList struct {
 	Error    string        `json:"error"`
 	Channels []ChannelInfo `json:"channels"`
 }
+
+type GroupList struct {
+	Ok     bool          `json:"ok"`
+	Error  string        `json:"error"`
+	Groups []ChannelInfo `json:"groups"`
+}

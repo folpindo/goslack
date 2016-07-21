@@ -134,5 +134,30 @@ func (s *Slack) GetChannelList() (channels []apitypes.ChannelInfo, err error) {
 
 	channels = response.Channels
 	return
+}
 
+// GetGroupList retrieves a list of active public channels
+func (s *Slack) GetGroupList() (channels []apitypes.ChannelInfo, err error) {
+	body := encodeFormData(map[string]string{
+		"token":            s.Token,
+		"exclude_archived": "1",
+	})
+
+	resp, err := get("https://slack.com/api/groups.list?" + body)
+	if err != nil {
+		return
+	}
+
+	var response apitypes.GroupList
+	err = json.Unmarshal(resp, &response)
+	if err != nil {
+		return
+	}
+
+	if !response.Ok {
+		err = fmt.Errorf("Error getting channel info: %s", response.Error)
+	}
+
+	channels = response.Groups
+	return
 }
