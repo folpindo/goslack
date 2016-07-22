@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/doozr/goslack/apitypes"
 )
 
 func get(url string) (response []byte, err error) {
@@ -44,14 +42,14 @@ func getWebsocketURL(token string) (wsurl string, id string, err error) {
 		return
 	}
 
-	var respObj apitypes.RtmStart
+	var respObj RtmStart
 	err = json.Unmarshal(body, &respObj)
 	if err != nil {
 		return
 	}
 
-	if !respObj.Ok {
-		err = fmt.Errorf("Slack error: %s", respObj.Error)
+	if !respObj.Success() {
+		err = fmt.Errorf("Slack error: %s", respObj.GetError())
 		return
 	}
 

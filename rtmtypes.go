@@ -1,10 +1,8 @@
-package rtmtypes
+package goslack
 
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/doozr/goslack/apitypes"
 )
 
 // RtmEvent is the base Slack event that others extend
@@ -30,11 +28,10 @@ type RtmMessage struct {
 // RtmUserChange is a notification that a user profile has changed
 type RtmUserChange struct {
 	RtmEvent
-	User apitypes.UserInfo `json:"user"`
+	User UserInfo `json:"user"`
 }
 
-// Unmarshal creates an RtmEvent instance from raw bytes
-func Unmarshal(raw []byte) (event RtmRaw, err error) {
+func unmarshal(raw []byte) (event RtmRaw, err error) {
 	err = json.Unmarshal(raw, &event)
 	if err != nil {
 		return

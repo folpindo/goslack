@@ -1,22 +1,17 @@
 package goslack
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"sync/atomic"
-
-	"github.com/doozr/goslack/apitypes"
-	"github.com/doozr/goslack/rtmtypes"
 
 	"golang.org/x/net/websocket"
 )
 
 // RtmChannel is an incoming stream of messages on the Slack websocket
-type RtmChannel chan rtmtypes.RtmRaw
+type RtmChannel chan RtmRaw
 
-// Slack represents a connection to the Slack web and real time APIs
-type Slack struct {
+// Connection represents a connection to the Slack web and real time APIs
+type Connection struct {
 	Token     string
 	RealTime  RtmChannel
 	ID        string
@@ -29,7 +24,7 @@ type Error struct {
 }
 
 // New creates a new Slack instance
-func New(token string) (slackConn *Slack, err error) {
+func New(token string) (connection *Connection, err error) {
 	wsurl, id, err := getWebsocketURL(token)
 	if err != nil {
 		return
@@ -40,19 +35,19 @@ func New(token string) (slackConn *Slack, err error) {
 		return
 	}
 
-	slackConn = &Slack{
+	connection = &Connection{
 		Token:     token,
 		RealTime:  make(RtmChannel, 10),
 		ID:        id,
 		websocket: ws,
 	}
 
-	go getRealTimeEvents(slackConn)
+	go getRealTimeEvents(connection)
 
 	return
 }
 
-func getRealTimeEvents(s *Slack) {
+func getRealTimeEvents(s *Connection) {
 	for {
 		var data []byte
 		err := websocket.Message.Receive(s.websocket, &data)
@@ -61,7 +56,7 @@ func getRealTimeEvents(s *Slack) {
 			continue
 		}
 
-		e, err := rtmtypes.Unmarshal(data)
+		e, err := unmarshal(data)
 		if err != nil {
 			continue
 		}
@@ -73,91 +68,14 @@ func getRealTimeEvents(s *Slack) {
 var counter uint64
 
 // PostRealTimeMessage sends a message to a Slack channel
-func (s *Slack) PostRealTimeMessage(channel, text string) error {
+func (s *Connection) PostRealTimeMessage(channel, text string) error {
 	id := atomic.AddUint64(&counter, 1)
-	m := rtmtypes.RtmMessage{
-		RtmEvent: rtmtypes.RtmEvent{Type: "message"},
+	m := RtmMessage{
+		RtmEvent: RtmEvent{Type: "message"},
 		ID:       id,
 		Channel:  channel,
 		User:     "",
 		Text:     text,
 	}
 	return websocket.JSON.Send(s.websocket, m)
-}
-
-// GetUserList retrieves a list of user IDs mapped to usernames from Slack
-func (s *Slack) GetUserList() (users []apitypes.UserInfo, err error) {
-	body := encodeFormData(map[string]string{
-		"token": s.Token,
-	})
-
-	resp, err := get("https://slack.com/api/users.list?" + body)
-	if err != nil {
-		return
-	}
-
-	var response apitypes.UserList
-	err = json.Unmarshal(resp, &response)
-	if err != nil {
-		return
-	}
-
-	if !response.Ok {
-		err = fmt.Errorf("Error getting user info: %s", response.Error)
-	}
-
-	users = response.Members
-	return
-}
-
-// GetChannelList retrieves a list of active public channels
-func (s *Slack) GetChannelList() (channels []apitypes.ChannelInfo, err error) {
-	body := encodeFormData(map[string]string{
-		"token":            s.Token,
-		"exclude_archived": "1",
-	})
-
-	resp, err := get("https://slack.com/api/channels.list?" + body)
-	if err != nil {
-		return
-	}
-
-	var response apitypes.ChannelList
-	err = json.Unmarshal(resp, &response)
-	if err != nil {
-		return
-	}
-
-	if !response.Ok {
-		err = fmt.Errorf("Error getting channel info: %s", response.Error)
-	}
-
-	channels = response.Channels
-	return
-}
-
-// GetGroupList retrieves a list of active public channels
-func (s *Slack) GetGroupList() (channels []apitypes.ChannelInfo, err error) {
-	body := encodeFormData(map[string]string{
-		"token":            s.Token,
-		"exclude_archived": "1",
-	})
-
-	resp, err := get("https://slack.com/api/groups.list?" + body)
-	if err != nil {
-		return
-	}
-
-	var response apitypes.GroupList
-	err = json.Unmarshal(resp, &response)
-	if err != nil {
-		return
-	}
-
-	if !response.Ok {
-		err = fmt.Errorf("Error getting channel info: %s", response.Error)
-	}
-
-	channels = response.Groups
-	return
 }

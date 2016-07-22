@@ -1,4 +1,4 @@
-package rtmtypes
+package goslack
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 func TestUnmarshalEvent(t *testing.T) {
 	raw := []byte(`{ "type": "message" }`)
-	event, err := Unmarshal(raw)
+	event, err := unmarshal(raw)
 	require.Nil(t, err)
 	assert.Equal(t, "message", event.Type)
 	assert.Equal(t, raw, event.Raw)
@@ -17,13 +17,13 @@ func TestUnmarshalEvent(t *testing.T) {
 
 func TestUnmarshalInvalidEvent(t *testing.T) {
 	raw := []byte(`{}`)
-	_, err := Unmarshal(raw)
+	_, err := unmarshal(raw)
 	assert.Error(t, err)
 }
 
 func TestCastToRtmMessage(t *testing.T) {
 	raw := []byte(`{ "type": "message", "id": 123456, "channel": "CA1B2C3", "user": "UD1E2F3", "text": "Message content" }`)
-	event, err := Unmarshal(raw)
+	event, err := unmarshal(raw)
 	require.Nil(t, err)
 
 	message, err := event.RtmMessage()
@@ -38,7 +38,7 @@ func TestCastToRtmMessage(t *testing.T) {
 
 func TestCastToInvalidRtmMessage(t *testing.T) {
 	raw := []byte(`{ "type": "banana" }`)
-	event, err := Unmarshal(raw)
+	event, err := unmarshal(raw)
 	require.Nil(t, err)
 
 	_, err = event.RtmMessage()
@@ -47,7 +47,7 @@ func TestCastToInvalidRtmMessage(t *testing.T) {
 
 func TestCastToRtmUserChange(t *testing.T) {
 	raw := []byte(`{ "type": "user_change", "user": { "id": "U123ABC", "name": "Bananaman" } }`)
-	event, err := Unmarshal(raw)
+	event, err := unmarshal(raw)
 	require.Nil(t, err)
 
 	userChange, err := event.RtmUserChange()
@@ -60,7 +60,7 @@ func TestCastToRtmUserChange(t *testing.T) {
 
 func TestCastToInvalidRtmUserChange(t *testing.T) {
 	raw := []byte(`{ "type": "banana" }`)
-	event, err := Unmarshal(raw)
+	event, err := unmarshal(raw)
 	require.Nil(t, err)
 
 	_, err = event.RtmUserChange()
