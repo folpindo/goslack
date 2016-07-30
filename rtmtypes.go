@@ -3,6 +3,7 @@ package goslack
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // RtmEvent is the base Slack event that others extend
@@ -14,6 +15,13 @@ type RtmEvent struct {
 type RtmRaw struct {
 	RtmEvent
 	Raw []byte
+}
+
+// RtmPingPong is a ping request and pong response
+type RtmPingPong struct {
+	RtmEvent
+	ID        uint64 `json:"id"`
+	Timestamp time.Time
 }
 
 // RtmMessage is a Slack message sent to a channel
