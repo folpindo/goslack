@@ -34,6 +34,17 @@ type RtmStart struct {
 	Self Self   `json:"self"`
 }
 
+// IMChannel is a simple channel ID of an instant message chat
+type IMChannel struct {
+	ID string `json:"id"`
+}
+
+// IMOpenResponse is the respone to opening an IM chat
+type IMOpenResponse struct {
+	APIType
+	Channel IMChannel `json:"channel"`
+}
+
 // UserList is a list of users returned from the Slack API
 type UserList struct {
 	APIType

@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 func get(url string) (response []byte, err error) {
@@ -25,14 +24,21 @@ func get(url string) (response []byte, err error) {
 	return
 }
 
-func encodeFormData(fields map[string]string) string {
-	a := make([]string, len(fields))
-	ix := 0
-	for k, v := range fields {
-		a[ix] = fmt.Sprintf("%s=%s", k, url.QueryEscape(v))
-		ix++
+func post(url string, body url.Values) (response []byte, err error) {
+	resp, err := http.PostForm(url, body)
+	if err != nil {
+		return
 	}
-	return strings.Join(a, "&")
+
+	if resp.StatusCode != 200 {
+		err = fmt.Errorf("API POST '%s' failed with code %d", url, resp.StatusCode)
+		return
+	}
+
+	response, err = ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	return
+
 }
 
 func getWebsocketURL(token string) (wsurl string, id string, err error) {

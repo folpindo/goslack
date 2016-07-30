@@ -3,12 +3,11 @@ package goslack
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
-type formData map[string]string
-
-func getAndUnmarshal(endpoint string, formData formData, target APIResponse) (err error) {
-	body := encodeFormData(formData)
+func getAndUnmarshal(endpoint string, formData url.Values, target APIResponse) (err error) {
+	body := formData.Encode()
 	url := "https://slack.com" + endpoint + "?" + body
 	resp, err := get(url)
 	if err != nil {
@@ -28,9 +27,8 @@ func getAndUnmarshal(endpoint string, formData formData, target APIResponse) (er
 
 // GetUserList retrieves a list of user IDs mapped to usernames from Slack
 func (s *Connection) GetUserList() (users []UserInfo, err error) {
-	query := formData{
-		"token": s.Token,
-	}
+	query := url.Values{}
+	query.Add("token", s.Token)
 
 	var userList UserList
 	err = getAndUnmarshal("/api/users.list", query, &userList)
@@ -44,10 +42,9 @@ func (s *Connection) GetUserList() (users []UserInfo, err error) {
 
 // GetChannelList retrieves a list of active public channels
 func (s *Connection) GetChannelList() (channels []ChannelInfo, err error) {
-	query := formData{
-		"token":            s.Token,
-		"exclude_archived": "1",
-	}
+	query := url.Values{}
+	query.Add("token", s.Token)
+	query.Add("exclude_archived", "1")
 
 	var channelList ChannelList
 	err = getAndUnmarshal("/api/channels.list", query, &channelList)
@@ -61,10 +58,9 @@ func (s *Connection) GetChannelList() (channels []ChannelInfo, err error) {
 
 // GetGroupList retrieves a list of active public channels
 func (s *Connection) GetGroupList() (channels []ChannelInfo, err error) {
-	query := formData{
-		"token":            s.Token,
-		"exclude_archived": "1",
-	}
+	query := url.Values{}
+	query.Add("token", s.Token)
+	query.Add("exclude_archived", "1")
 
 	var groupList GroupList
 	err = getAndUnmarshal("/api/groups.list", query, &groupList)
